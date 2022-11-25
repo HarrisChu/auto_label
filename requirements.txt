@@ -1,2 +1,2 @@
 PyGithub==v1.55
-sh==1.14.0
+sh
