@@ -25,7 +25,6 @@ env:
   PR_LABEL: "type"
   IU_NUM: ${{ github.event.issue.number }}
   PR_NUM: ${{ github.event.number }}
-  Event: ${{github.event}}
 
 jobs:
   sync:
