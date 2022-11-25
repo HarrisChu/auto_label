@@ -3,6 +3,9 @@ from datetime import datetime, timedelta
 from tabnanny import check
 from github import Github
 
+from auto_label.issue import IssueProcessor
+
+
 gh_url = "https://github.com"
 token = os.environ["GH_PAT"]
 gh = Github(token)
@@ -62,22 +65,25 @@ def auto_delete_default(element):
             except:
                 pass
 
+
 def check_element_typelabel(element, label):
     for i in element.labels:
         if label == i.name:
             return True
     return False
 
+
 def mod_pr_issue_label(list_element, label):
     for element in list_element:
         if check_element_label(element, "type") == False:
             element.add_to_labels("type/none")
         else:
-            if check_element_typelabel(element,"type/bug") == True:
+            if check_element_typelabel(element, "type/bug") == True:
                 if check_element_label(element, label) == False:
                     element.add_to_labels("{}/none".format(label))
                 else:
                     auto_delete_default(element)
+
 
 def main(repo_name, issue_num, pr_num):
     list_issue_label = issue_labels.split(";")
@@ -104,17 +110,24 @@ def main(repo_name, issue_num, pr_num):
 
 
 if __name__ == "__main__":
-    repo_name = os.environ["GITHUB_REPOSITORY"]
-    issue_num = os.environ["IU_NUM"]
-    pr_num = os.environ["PR_NUM"]
-    event  = os.environ["Event"]
-    print("event: {}".format(event))
-    # issue_num="31"
-    # pr_num=""
-    if issue_num != "":
-        issue_num = int(issue_num)
-    if pr_num != "":
-        pr_num = int(pr_num)
+    gh_url = "https://github.com"
+    token = os.environ["GH_PAT"]
+    gh = Github(token)
+    event = os.getenv("EVENT", None)
+    event_name = os.getenv("EVENT_NAME", None)
+    if event is None or event_name is None:
+        print("No event found")
+        exit(1)
+    processor = None
+    if event_name == "issues":
+        processor = IssueProcessor(gh, event)
+    elif event_name == "pull_request":
+        pass
+    if processor is None:
+        print("No processor found")
+        exit(1)
 
-    print(">>> issue number: {}, pr number: {}".format(issue_num, pr_num))
-    main(repo_name, issue_num, pr_num)
+    try:
+        processor.run()
+    except Exception as e:
+        raise e
