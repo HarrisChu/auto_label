@@ -1,4 +1,4 @@
-name: auto-add-label
+name: Auto check label
 
 on:
   issues:
@@ -37,3 +37,5 @@ jobs:
         with:
           python-version: '3.8'
       - uses: HarrisChu/auto_label@v1
+        with:
+          Event: ${{github.event}}
