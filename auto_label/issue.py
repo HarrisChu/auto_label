@@ -32,8 +32,12 @@ class IssueProcessor(BaseProcessor):
     def opened(self):
         # if open or reopen, then delete "process/fixed", "process/done"
         # verify the mandatory labels, "affects/xxx", "severity/xxx"
-        self.issue.remove_from_labels("process/fixed")
-        self.issue.remove_from_labels("process/done")
+        try:
+            self.issue.remove_from_labels("process/fixed")
+            self.issue.remove_from_labels("process/done")
+        except:
+            # ignore if not exist
+            pass
         self.verify_mandatory_labels()
 
     def closed(self):
@@ -61,8 +65,12 @@ class IssueProcessor(BaseProcessor):
         if self.change_label is None:
             return
         if self.change_label['name'] == "type/bug":
-            self.issue.remove_from_labels("process/fixed")
-            self.issue.remove_from_labels("process/done")
+            try:
+                self.issue.remove_from_labels("process/fixed")
+                self.issue.remove_from_labels("process/done")
+            except:
+                # ignore if not exist
+                pass
 
     def verify_mandatory_labels(self):
         mandatory_list = ["affects", "type", "severity"]
