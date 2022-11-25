@@ -6,13 +6,6 @@ from github import Github
 from auto_label.issue import IssueProcessor
 
 
-gh_url = "https://github.com"
-token = os.environ["GH_PAT"]
-gh = Github(token)
-issue_labels = os.environ["ISSUE_LABEL"]
-pr_labels = os.environ["PR_LABEL"]
-
-
 def get_yesterday_time():
     today = datetime.today()
     yesterday = today - timedelta(days=1)
@@ -85,40 +78,39 @@ def mod_pr_issue_label(list_element, label):
                     auto_delete_default(element)
 
 
-def main(repo_name, issue_num, pr_num):
-    list_issue_label = issue_labels.split(";")
-    list_pr_label = pr_labels.split(";")
-    repo = gh.get_repo(repo_name)
-    list_issues = []
-    list_prs = []
-    if issue_num:
-        git_issue = repo.get_issue(issue_num)
-        list_issues.append(git_issue)
-    else:
-        list_issues = get_issues(repo)
-    for each in list_issue_label:
-        mod_pr_issue_label(list_issues, each)
+# def main(repo_name, issue_num, pr_num):
+#     list_issue_label = issue_labels.split(";")
+#     list_pr_label = pr_labels.split(";")
+#     repo = gh.get_repo(repo_name)
+#     list_issues = []
+#     list_prs = []
+#     if issue_num:
+#         git_issue = repo.get_issue(issue_num)
+#         list_issues.append(git_issue)
+#     else:
+#         list_issues = get_issues(repo)
+#     for each in list_issue_label:
+#         mod_pr_issue_label(list_issues, each)
 
-    if pr_num:
-        git_pr = repo.get_pull(pr_num)
-        list_prs.append(git_pr)
-    else:
-        list_prs = get_prs(repo)
+#     if pr_num:
+#         git_pr = repo.get_pull(pr_num)
+#         list_prs.append(git_pr)
+#     else:
+#         list_prs = get_prs(repo)
 
-    for each in list_pr_label:
-        mod_pr_issue_label(list_prs, each)
+#     for each in list_pr_label:
+#         mod_pr_issue_label(list_prs, each)
 
 
-if __name__ == "__main__":
-    gh_url = "https://github.com"
+def main():
     token = os.environ["GH_PAT"]
-    gh = Github(token)
     event = os.getenv("EVENT", None)
     event_name = os.getenv("EVENT_NAME", None)
     if event is None or event_name is None:
         print("No event found")
         exit(1)
     event_json = json.loads(event)
+    gh = Github(token)
 
     processor = None
     if event_name == "issues":
@@ -133,3 +125,7 @@ if __name__ == "__main__":
         processor.run()
     except Exception as e:
         raise e
+
+
+if __name__ == "__main__":
+    main()

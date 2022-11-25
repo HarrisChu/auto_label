@@ -1,4 +1,4 @@
-from base import BaseProcessor
+from auto_label.base import BaseProcessor
 
 
 class IssueProcessor(BaseProcessor):
@@ -14,7 +14,7 @@ class IssueProcessor(BaseProcessor):
             self.issue = self.repo.get_issue(issue_num)
         except Exception as e:
             raise e
-        print(">>> issue number: {}".format(self.issue_num))
+        print(">>> issue number: {}".format(self.issue.number))
 
     def run(self):
         if self.action is None:
