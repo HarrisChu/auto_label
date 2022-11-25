@@ -107,6 +107,8 @@ if __name__ == "__main__":
     repo_name = os.environ["GITHUB_REPOSITORY"]
     issue_num = os.environ["IU_NUM"]
     pr_num = os.environ["PR_NUM"]
+    event  = os.environ["Event"]
+    print("event: {}".format(event))
     # issue_num="31"
     # pr_num=""
     if issue_num != "":

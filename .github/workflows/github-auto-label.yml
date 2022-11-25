@@ -1,0 +1,39 @@
+name: auto-add-label
+
+on:
+  issues:
+    types:
+      - reopened
+      - opened
+      - labeled
+      - unlabeled
+      - closed
+  pull_request:
+    types: 
+      - reopened
+      - opened
+      - labeled
+      - unlabeled
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+    
+env:
+  GH_PAT: ${{ secrets.GITHUB_TOKEN }}
+  ISSUE_LABEL: "type;severity"
+  PR_LABEL: "type"
+  IU_NUM: ${{ github.event.issue.number }}
+  PR_NUM: ${{ github.event.number }}
+  Event: ${{github.event}}
+
+jobs:
+  sync:
+    name: auto check label
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - uses: HarrisChu/auto_label@v1
