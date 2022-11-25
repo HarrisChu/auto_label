@@ -1,6 +1,6 @@
 import os
+import json
 from datetime import datetime, timedelta
-from tabnanny import check
 from github import Github
 
 from auto_label.issue import IssueProcessor
@@ -118,9 +118,11 @@ if __name__ == "__main__":
     if event is None or event_name is None:
         print("No event found")
         exit(1)
+    event_json = json.loads(event)
+
     processor = None
     if event_name == "issues":
-        processor = IssueProcessor(gh, event)
+        processor = IssueProcessor(gh, event_json)
     elif event_name == "pull_request":
         pass
     if processor is None:

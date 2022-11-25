@@ -1,7 +1,3 @@
-import json
-
-from github.Hook import IssueHook
-
 from base import BaseProcessor
 
 
@@ -63,7 +59,7 @@ class IssueProcessor(BaseProcessor):
     def unlabeled(self):
         # unable "type/bug", then delete "process/fixed", "process/done"
         if self.change_label is None:
-            return 
+            return
         if self.change_label['name'] == "type/bug":
             self.issue.remove_from_labels("process/fixed")
             self.issue.remove_from_labels("process/done")
