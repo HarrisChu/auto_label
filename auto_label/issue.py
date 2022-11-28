@@ -23,7 +23,10 @@ class IssueProcessor(BaseProcessor):
         if self.action == "opened" or self.action == "reopened":
             self.opened()
         elif self.action == "closed":
-            self.closed()
+            labels = self.issue.get_labels()
+            labels_name = [label.name for label in labels]
+            if "type/bug" in labels_name:
+                self.closed()
         elif self.action == "labeled":
             self.labeled()
         elif self.action == "unlabeled":
@@ -46,7 +49,7 @@ class IssueProcessor(BaseProcessor):
 
     def labeled(self):
         # when add severity, should delete other severity labels.
-        modify_list = ["severity"]
+        modify_list = ["severity", "affects", "type"]
         if self.change_label is None:
             return
         labels = self.issue.get_labels()
@@ -57,7 +60,7 @@ class IssueProcessor(BaseProcessor):
                 continue
 
             for name in labels_name:
-                if name.startswith(each + "/") and name != self.change_label['name']:
+                if name.startswith(each + "/") and not name.startswith(self.change_label['name']):
                     self.issue.remove_from_labels(name)
 
     def unlabeled(self):
