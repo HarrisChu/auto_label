@@ -49,7 +49,7 @@ class IssueProcessor(BaseProcessor):
 
     def labeled(self):
         # when add severity, should delete other severity labels.
-        modify_list = ["severity", "affects", "type"]
+        modify_list = ["severity", "affects", "type", "process"]
         if self.change_label is None:
             return
         labels = self.issue.get_labels()
