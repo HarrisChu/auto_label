@@ -4,4 +4,4 @@ description: 'add label automatically'
 
 runs:
   using: "docker"
-  image: "docker://harrischu/auto_label:v1"
+  image: "docker://qianbdvvv/auto_label:v1"
