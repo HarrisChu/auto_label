@@ -6,29 +6,30 @@ class IssueProcessor(BaseProcessor):
     def __init__(self, client, event):
         super().__init__(client, event)
         self.action = self.event.get('action', None)
+        if self.action is None:
+            raise Exception("No action found")
         self.change_label = self.event.get('label', None)
         try:
             repo = self.event['repository']['full_name']
             self.repo = self.client.get_repo(repo)
             issue_num = self.event['issue']['number']
             self.issue = self.repo.get_issue(issue_num)
+            labels = self.issue.get_labels()
+            self.labels_name = [label.name for label in labels]
         except Exception as e:
             raise e
         print(">>> issue number: {}".format(self.issue.number))
 
     def run(self):
-        if self.action is None:
-            raise Exception("No action found")
-
         if self.action == "opened" or self.action == "reopened":
-            self.opened()
+            if "type/bug" in self.labels_name:
+                self.opened()
         elif self.action == "closed":
-            labels = self.issue.get_labels()
-            labels_name = [label.name for label in labels]
-            if "type/bug" in labels_name:
+            if "type/bug" in self.labels_name:
                 self.closed()
         elif self.action == "labeled":
-            self.labeled()
+            if "type/bug" in self.labels_name:
+                self.labeled()
         elif self.action == "unlabeled":
             self.unlabeled()
 
@@ -62,6 +63,7 @@ class IssueProcessor(BaseProcessor):
             for name in labels_name:
                 if name.startswith(each + "/") and not name.startswith(self.change_label['name']):
                     self.issue.remove_from_labels(name)
+        self.verify_mandatory_labels()
 
     def unlabeled(self):
         # unable "type/bug", then delete "process/fixed", "process/done"
@@ -71,6 +73,11 @@ class IssueProcessor(BaseProcessor):
             try:
                 self.issue.remove_from_labels("process/fixed")
                 self.issue.remove_from_labels("process/done")
+                for label in self.labels_name:
+                    if label.startswith("severity/"):
+                        self.issue.remove_from_labels(label)
+                    if label.startswith("affects/"):
+                        self.issue.remove_from_labels(label)
             except:
                 # ignore if not exist
                 pass
