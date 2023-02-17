@@ -3,6 +3,7 @@ import json
 from github import Github
 
 from auto_label.issue import IssueProcessor
+from auto_label.pull_request import PullRequestProcessor
 
 
 def main():
@@ -19,10 +20,10 @@ def main():
     if event_name == "issues":
         processor = IssueProcessor(gh, event_json)
     elif event_name == "pull_request":
-        raise Exception("Not implemented yet")
+        processor = PullRequestProcessor(gh, event_json)
     if processor is None:
         print("No processor found")
-        return 
+        return
 
     try:
         processor.run()

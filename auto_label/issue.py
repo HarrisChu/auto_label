@@ -61,7 +61,9 @@ class IssueProcessor(BaseProcessor):
                 continue
 
             for name in labels_name:
-                if name.startswith(each + "/") and not name.startswith(self.change_label['name']):
+                if name.startswith(each + "/") and not name.startswith(
+                    self.change_label['name']
+                ):
                     self.issue.remove_from_labels(name)
         self.verify_mandatory_labels()
 
