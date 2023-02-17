@@ -1,10 +1,11 @@
 FROM python:3.8.12-alpine AS builder
-ADD . /app
+ADD ./requirements.txt /app/requirements.txt
 WORKDIR /app
 
 RUN apk add gcc linux-headers libc-dev libffi-dev
 # We are installing a dependency here directly into our app source dir
 RUN pip3 install --target=/app -r /app/requirements.txt
+ADD . /app
 
 # A distroless container image with Python and some basics like SSL certificates
 # https://github.com/GoogleContainerTools/distroless
